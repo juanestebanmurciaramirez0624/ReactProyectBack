@@ -1,6 +1,8 @@
 import User from '../models/user.model.js'
 import bcrypt from 'bcryptjs'
 import {createAccesToken} from '../libs/jwt.js'
+import { TOKEN_SECRET } from '../config.js'
+import jwt from 'jsonwebtoken'
 
 export const register = async (req, res) => {
     const {fullName, email, password, ticketId} = req.body
@@ -82,5 +84,30 @@ export const profile = async (req, res) => {
         email: userFound.email,
         createAt: userFound.createdAt,
         updateAt: userFound.updatedAt,
+    })
+}
+
+export const verifyToken = async (req, res) => {
+    const {token} = req.cookies
+
+    if(!token) return res.status(401).json({
+        msg: "No se Autentico"
+    })
+
+    jwt.verify(token, TOKEN_SECRET, async (error, user) => {
+        if(error) return res.status(401).json({
+            msg: "No se Autentico"
+        })
+
+        const userFound = await User.findById(user.id)
+        if(!userFound) return res.status(401).json({
+            msg: "No se Autentico"
+        })
+
+        return res.json({
+            id: userFound._id,
+            fullName: userFound.fullName,
+            email: userFound.email
+        })
     })
 }
