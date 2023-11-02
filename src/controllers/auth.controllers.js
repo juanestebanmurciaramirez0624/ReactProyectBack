@@ -7,9 +7,6 @@ import jwt from 'jsonwebtoken'
 export const register = async (req, res) => {
     const {fullName, email, password, ticketId} = req.body
     try {
-        const userFound = await User.findOne({email})
-        if(!userFound) return res.status(400).json(["Usuario no encontrado"])
-
         const passwordHash = await bcrypt.hash(password, 10)
         const newUser = new User({
             fullName,
@@ -31,7 +28,9 @@ export const register = async (req, res) => {
         })
 
     } catch (error) {
-        res.status(500).json(["No fue posible crear el usuario"])
+        res.status(500).json({
+            msg: "Usuario no encontrado"
+        })
     }
 }
 
