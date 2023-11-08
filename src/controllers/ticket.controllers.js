@@ -1,50 +1,87 @@
 import Ticket from '../models/ticket.model.js'
 
 export const readTickets = async (req, res) =>{
-    const ticket = await Ticket.find()
-    res.json(ticket)
+    try {
+        const userId = req.user
+        const ticket = await Ticket.find({
+            //user: userId
+        }).populate('user').populate('service')
+        res.json(ticket)
+    } catch (error) {
+        return res.status(404).json({
+            message: "Ticket no encontrado"
+        })
+    }
 }
 
 export const readTicket = async (req, res) =>{
-    const ticket = await Ticket.findById(req.params.id)
-    if(!ticket) return res.status(404).json({
-        msg: `El ticket ${ticket} no fue encontrado`
-    })
-
+    try {
+        const ticket = await Ticket.findById(req.params.id)
+        if(!ticket) return res.status(404).json({
+            msg: `El ticket ${ticket.name} no fue encontrado`
+        })
     res.json(ticket)
+
+    } catch (error) {
+        return res.status(404).json({
+            message: "Ticket no encontrado"
+        })
+    }
+
 }
 
 export const createTickets = async (req, res) =>{
-    const { name, description  } = req.body
-
-    const newTicket = new Ticket({
-        name,
-        description,
-        //service: req.serve.id
-    })
-    const saveTicket = await newTicket.save()
-     res.json(saveTicket)
+    try {
+        const { name, subject, description, state, service } = req.body
+        const userId = req.user
+    
+        const newTicket = new Ticket({
+            name,
+            subject,
+            description,
+            state,
+            user: userId,
+            service: service
+        })
+        const saveTicket = await newTicket.save()
+         res.json(saveTicket)
+    } catch (error) {
+        return res.status(404).json({
+            message: "Ticket no encontrado"
+        })
+    }
 }
 
 export const updateTickets = async (req, res) =>{
-    const ticket = await Ticket.findByIdAndUpdate(req.params.id, req.body, {
-        new: true
-    })
-    if(!ticket) return res.status(404).json({
-        msg: `El ticket ${ticket} no fue encontrado`
-    })
-
-    res.json(ticket)
+    try {
+        const ticket = await Ticket.findByIdAndUpdate(req.params.id, req.body, {
+            new: true
+        })
+        if(!ticket) return res.status(404).json({
+            msg: `El ticket ${ticket} no fue encontrado`
+        })
+        res.json(ticket)
+    } catch (error) {
+        return res.status(404).json({
+            message: "Ticket no encontrado"
+        })
+    }
 }
 
 export const deleteTickets = async (req, res) =>{
-    const ticket = await Ticket.findByIdAndDelete(req.params.id)
-    if(!ticket) return res.status(404).json({
-        msg: `El ticket ${ticket} no fue encontrado`
-    })
-
-    res.status(200).json({
-        msg: `El ticket ${ticket.name} fue eliminado correctamente`
-    })
+    try {
+        const ticket = await Ticket.findByIdAndDelete(req.params.id)
+        if(!ticket) return res.status(404).json({
+            msg: `El ticket ${ticket.name} no fue encontrado`
+        })
+    
+        res.status(200).json({
+            msg: `El ticket ${ticket.name} fue eliminado correctamente`
+        })
+    } catch (error) {
+        return res.status(404).json({
+            message: "Ticket no encontrado"
+        })
+    }
 }
 

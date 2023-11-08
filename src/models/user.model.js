@@ -6,6 +6,17 @@
             required: true,
             trim: true
         },
+        documentType: {
+            type: [String],
+            required: true,
+            enum: ['T.I', 'C.C', 'C.E', 'Pasaporte']
+        },
+        documentNumber: {
+            type: Number,
+            required: true,
+            unique: true,
+            maxlength: 10
+        },
         email: {
             type: String,
             required: true,
@@ -15,10 +26,6 @@
         password: {
             type: String,
             required: true
-        },
-        ticket:{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Ticket'
         }
     }, {
         timestamps: true

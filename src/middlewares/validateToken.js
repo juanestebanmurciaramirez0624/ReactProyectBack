@@ -11,9 +11,7 @@ export const validateToken = (req, res, next) =>{
         if(error) return res.status(401).json({
             msg: "Token no valido" 
         })
-
         req.user = user.id
-        
         next()
     })
 }

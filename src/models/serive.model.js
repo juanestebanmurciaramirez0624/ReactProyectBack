@@ -1,4 +1,4 @@
-import mongoose from "mongoose"
+import mongoose, { Schema } from "mongoose"
 
 const seriveShema = new mongoose.Schema({
     name: {
@@ -10,6 +10,15 @@ const seriveShema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true
+    },
+    category: {
+        type: [String],
+        required: true,
+        enum: ['Tecnologia','Salud','Educación']
+    },
+    price: {
+        type: Schema.Types.Decimal128,
+        required: true,
     }
 }, {
     timestamps: true

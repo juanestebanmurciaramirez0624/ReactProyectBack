@@ -6,15 +6,31 @@ const ticketShema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    subject: {
+        type: String,
+        required: true,
+        trim: true
+    },
     description: {
         type: String,
         required: true,
         trim: true
     },
+    state: {
+        type: [String],
+        required: true,
+        enum: ['Respondido', 'No Respondido'],
+        default: 'No Respondido'
+    },
+    user:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
+    },
     service:{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Service",
-        //required: true
+        required: true
     }
 }, {
     timestamps: true

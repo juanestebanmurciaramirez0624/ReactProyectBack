@@ -5,14 +5,15 @@ import { TOKEN_SECRET } from '../config.js'
 import jwt from 'jsonwebtoken'
 
 export const register = async (req, res) => {
-    const {fullName, email, password, ticketId} = req.body
+    const {fullName, documentType, documentNumber, email, password} = req.body
     try {
         const passwordHash = await bcrypt.hash(password, 10)
         const newUser = new User({
             fullName,
+            documentType,
+            documentNumber,
             email,
             password: passwordHash,
-            ticket: ticketId
         })
 
         const saveUser = await newUser.save()
@@ -21,6 +22,9 @@ export const register = async (req, res) => {
         res.json({
             id: saveUser._id,
             fullName: saveUser.fullName,
+            documentType: saveUser.documentType,
+            documentNumber: saveUser.documentNumber,
+            birthDate: saveUser.birthDate,
             email: saveUser.email,
             createAt: saveUser.createdAt,
             updateAt: saveUser.updatedAt,
@@ -53,9 +57,13 @@ export const login = async (req, res) => {
         res.json({
             id: userFound._id,
             fullName: userFound.fullName,
+            documentType: userFound.documentType,
+            documentNumber: userFound.documentNumber,
+            birthDate: userFound.birthDate,
             email: userFound.email,
             createAt: userFound.createdAt,
             updateAt: userFound.updatedAt,
+            ticket: userFound.ticket
         })
     } catch (error) {
         res.status(500).json({
