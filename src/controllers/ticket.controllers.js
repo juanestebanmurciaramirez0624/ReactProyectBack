@@ -2,9 +2,20 @@ import Ticket from '../models/ticket.model.js'
 
 export const readTickets = async (req, res) =>{
     try {
+        const ticket = await Ticket.find().populate('user').populate('service')
+        res.json(ticket)
+    } catch (error) {
+        return res.status(404).json({
+            message: "Ticket no encontrado"
+        })
+    }
+}
+
+export const readTicketsProfile = async (req, res) =>{
+    try {
         const userId = req.user
         const ticket = await Ticket.find({
-            //user: userId
+            user: userId
         }).populate('user').populate('service')
         res.json(ticket)
     } catch (error) {
