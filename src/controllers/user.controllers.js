@@ -33,8 +33,9 @@ export const updateUsers = async (req, res) =>{
         if(!user) return res.status(404).json({
             msg: `El usuario ${user} no fue encontrado`
         })
-        res.json(user)
-    } catch (error) {
+        res.status(201).json({
+            msg: `El usuario ${user.fullName} fue actualizado correctamente`
+        })    } catch (error) {
         return res.status(404).json({
             message: "Usuario no encontrado"
         })

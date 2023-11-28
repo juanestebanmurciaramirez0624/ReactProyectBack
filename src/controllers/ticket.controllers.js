@@ -55,7 +55,10 @@ export const createTickets = async (req, res) =>{
             service: service
         })
         const saveTicket = await newTicket.save()
-         res.json(saveTicket)
+         res.status(201).json({
+            saveTicket,
+            msg: `El ticket ${newTicket.name} fue registrado correctamente`
+        })
     } catch (error) {
         return res.status(404).json({
             message: "Ticket no encontrado"
@@ -71,7 +74,9 @@ export const updateTickets = async (req, res) =>{
         if(!ticket) return res.status(404).json({
             msg: `El ticket ${ticket} no fue encontrado`
         })
-        res.json(ticket)
+        res.status(201).json({
+            msg: `El ticket ${ticket.name} fue actualizado correctamente`
+        })
     } catch (error) {
         return res.status(404).json({
             message: "Ticket no encontrado"
