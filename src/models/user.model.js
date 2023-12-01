@@ -26,8 +26,12 @@
         password: {
             type: String,
             required: true
-        }
-    }, {
+        },
+        rol: {
+            type: [String],
+            required: true,
+            enum: ['Cliente', 'Administrador', 'Empleado']
+        }}, {
         timestamps: true
     }
     )

@@ -22,6 +22,10 @@ const ticketShema = new mongoose.Schema({
         enum: ['Respondido', 'No Respondido'],
         default: 'No Respondido'
     },
+    date:{
+        type: Date,
+        required: true
+    },
     user:{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",

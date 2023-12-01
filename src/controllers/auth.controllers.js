@@ -5,8 +5,18 @@ import { TOKEN_SECRET } from '../config.js'
 import jwt from 'jsonwebtoken'
 
 export const register = async (req, res) => {
-    const {fullName, documentType, documentNumber, email, password} = req.body
+    const { fullName, documentType, documentNumber, email, password, rol } = req.body
+
     try {
+        const existingDocument = await User.findOne({ documentNumber })
+        if (existingDocument) {
+            return res.status(400).json({ msg: 'El número de documento ya está registrado.' })
+        }
+        const existingEmail = await User.findOne({ email })
+        if (existingEmail) {
+            return res.status(400).json({ msg: 'El correo electrónico ya está registrado.' })
+        }
+
         const passwordHash = await bcrypt.hash(password, 10)
         const newUser = new User({
             fullName,
@@ -14,10 +24,12 @@ export const register = async (req, res) => {
             documentNumber,
             email,
             password: passwordHash,
+            rol
         })
 
         const saveUser = await newUser.save()
-        const token = await createAccesToken({id: saveUser._id})
+        const token = await createAccesToken({ id: saveUser._id })
+
         res.cookie('token', token)
         res.json({
             id: saveUser._id,
@@ -26,30 +38,34 @@ export const register = async (req, res) => {
             documentNumber: saveUser.documentNumber,
             birthDate: saveUser.birthDate,
             email: saveUser.email,
+            rol: saveUser.rol,
             createAt: saveUser.createdAt,
             updateAt: saveUser.updatedAt,
             ticket: saveUser.ticket
         })
-
     } catch (error) {
+        console.error(error)
         res.status(500).json({
-            msg: "Usuario no encontrado"
+            msg: "Error interno del servidor."
         })
     }
 }
+
 
 export const login = async (req, res) => {
     const { email, password } = req.body
     try {
 
-        const userFound = await User.findOne({email})
+        const userFound = await User.findOne({ email })
 
-        if(!userFound) return res.status(400).json(["Usuario no encontrado"])
+        if(!userFound) return res.status(400).json({ 
+            msg: 'Email no registrado'
+        })
         
         const isMatch = await bcrypt.compare(password, userFound.password)
 
         if(!isMatch) return res.status(400).json({
-            msg: "Contraseña incorrecta"
+            msg: 'Contraseña incorrecta'
         })
 
         const token = await createAccesToken({id: userFound._id})
@@ -61,6 +77,7 @@ export const login = async (req, res) => {
             documentNumber: userFound.documentNumber,
             birthDate: userFound.birthDate,
             email: userFound.email,
+            rol: userFound.rol,
             createAt: userFound.createdAt,
             updateAt: userFound.updatedAt,
             ticket: userFound.ticket
@@ -89,6 +106,7 @@ export const profile = async (req, res) => {
         id: userFound._id,
         fullName: userFound.fullName,
         email: userFound.email,
+        rol: userFound.rol,
         createAt: userFound.createdAt,
         updateAt: userFound.updatedAt,
     })
@@ -114,7 +132,8 @@ export const verifyToken = async (req, res) => {
         return res.json({
             id: userFound._id,
             fullName: userFound.fullName,
-            email: userFound.email
+            email: userFound.email,
+            rol: userFound.rol
         })
     })
 }

@@ -43,7 +43,7 @@ export const readTicket = async (req, res) =>{
 
 export const createTickets = async (req, res) =>{
     try {
-        const { name, subject, description, state, service } = req.body
+        const { name, subject, description, state, date, service } = req.body
         const userId = req.user
     
         const newTicket = new Ticket({
@@ -51,6 +51,7 @@ export const createTickets = async (req, res) =>{
             subject,
             description,
             state,
+            date,
             user: userId,
             service: service
         })
